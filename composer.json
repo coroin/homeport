@@ -1,0 +1,24 @@
+{
+    "name": "coroin/homeport",
+    "description": "Laradock multi-project helpers",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Coroin LLC",
+            "email": "info@coroin.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Homeport\\": "src/"
+        }
+    },
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Homeport\\HomeportServiceProvider"
+            ]
+        }
+    }
+}

@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+
+## Homeport Configuration
+
+# 1. set path to laradock files
+LARADOCK="${HOME}/projects/laradock"    # note: must use ${HOME} instead of ~
+
+# 2. set project name
+PROJECT="${PWD##*/}"                    # defaults to current folder
+
+# 3. specify database config
+DATABASE_NAME="${PROJECT}"              # defaults to project-name
+DATABASE_PASS=root                      # DO NOT CHANGE (laradock default)
+DATABASE_TYPE=mariadb                   # [mysql, mariadb]
+
+# 4. select containers to run
+CONTAINERS="nginx mariadb redis"        # default uses mariadb
+# CONTAINERS="nginx mysql redis"        # uncomment to use mysql
+
+################################################################################
+
+# Homeport script variables
+COMPOSE="docker-compose -f docker-compose.yml"
+
+# Run all commands from laradock folder
+cd ${LARADOCK}
+
+if [ ${#} -gt 0 ]; then
+    # start containers
+    if [[ "${1}" == "up" ]] || [[ "${1}" == "start" ]]; then
+        ${COMPOSE} up -d ${CONTAINERS}
+
+    # stop containers
+    elif [[ "${1}" == "down" ]] || [[ "${1}" == "stop" ]]; then
+        ${COMPOSE} down
+
+    # php artisan commands
+    elif [[ "${1}" == "art" ]] || [[ "${1}" == "artisan" ]]; then
+        shift 1
+        COMMAND="php artisan ${@}"
+        ${COMPOSE} exec \
+            workspace \
+            bash -c "cd ${PROJECT}; ${COMMAND}"
+
+    # composer commands
+    elif [ "${1}" == "comp" ] || [[ "${1}" == "composer" ]]; then
+        shift 1
+        COMMAND="composer ${@}"
+        ${COMPOSE} exec \
+            workspace \
+            bash -c "cd ${PROJECT}; ${COMMAND}"
+
+    # tail laravel log
+    elif [[ "${1}" == "log" ]]; then
+        shift 1
+        COMMAND="tail ${@} storage/logs/laravel.log"
+        ${COMPOSE} exec \
+            workspace \
+            bash -c "cd ${PROJECT}; ${COMMAND}"
+
+    # phpunit commands
+    elif [ "${1}" == "t" ] || [ "${1}" == "test" ]; then
+        shift 1
+        COMMAND="./vendor/bin/phpunit ${@}"
+        ${COMPOSE} exec \
+            workspace \
+            bash -c "cd ${PROJECT}; ${COMMAND}"
+
+    # mysql/mariadb commands
+    elif [[ "${1}" == "sql" ]]; then
+        shift 1
+        ${COMPOSE} exec \
+            ${DATABASE_TYPE} \
+            mysql -uroot -p${DATABASE_PASS} ${DATABASE_NAME} "${@}"
+
+    # redis commands
+    elif [[ "${1}" == "redis" ]]; then
+        shift 1
+        COMMAND="redis-cli ${@}"
+        ${COMPOSE} exec \
+            redis \
+            bash -c "${COMMAND}"
+
+        else
+        ${COMPOSE} "${@}"
+    fi
+else
+    ${COMPOSE} ps
+fi
