@@ -2,16 +2,34 @@
 
 Homeport is a script (`homeport`) installed your project-root with shortcuts to streamline your workflow while interacting with [laradock](http://laradock.io) in a multi-project environment.
 
-## Installation
+## Prerequesites
 
-0. Homeport requires [Laradock](http://laradock.io). It is suggested to install it in the root of your `~/projects` folder:
+Homeport requires [Docker](https://www.docker.com/community-edition#/download) and [Laradock](http://laradock.io).
+
+Install laradock in the same root folder as your other projects.
+
+> It is recommended to use the `~/projects` folder
+
+```
+/home/USER/projects/        /home/USER/projects/
+├── a-project               ├── a-project
+├── b-project               ├── b-project
+├──                         ├── laradock
+├── z-project               ├── z-project
+```
+
+Run this to create the `~/projects` folder (if it doesn't already exist) and install laradock:
 
 ```bash
 mkdir -p ~/projects && cd ~/projects
 git clone https://github.com/Laradock/laradock.git
+cd laradock
+cp env-example .env
 ```
 
-1. Install Homeport in your project(s):
+## Installation
+
+Install Homeport in your project:
 
 ```bash
 composer require coroin/homeport
@@ -19,7 +37,50 @@ php artisan vendor:publish --provider="Homeport\HomeportServiceProvider"
 chmod +x homeport
 ```
 
-2. Review the `homeport` script and customize for your project, if needed.
+Review the `homeport` script and customize for your project, if needed:
+
+```bash
+## Homeport Configuration
+
+# 1. set path to laradock files
+LARADOCK="${HOME}/projects/laradock"    # note: must use ${HOME} instead of ~
+
+# 2. set project name
+PROJECT="${PWD##*/}"                    # defaults to current folder
+
+# 3. specify database config
+DATABASE_NAME="${PROJECT}"              # defaults to project-name
+DATABASE_PASS=root                      # DO NOT CHANGE (laradock default)
+DATABASE_TYPE=mariadb                   # [mysql, mariadb]
+
+# 4. select containers to run
+CONTAINERS="nginx mariadb redis"        # default uses mariadb
+# CONTAINERS="nginx mysql redis"        # uncomment to use mysql
+```
+
+Create the nginx config file:
+
+```bash
+./homeport setup
+```
+
+Add entry to your hosts file:
+
+> It is recommended to use the `.test` top-level-domain for your localdev
+
+```bash
+127.0.0.1   yourproject.test
+```
+
+> On Mac/\*NIX this file is located at `/etc/hosts`.
+> On Windows, it is `C:\Windows\system32\drivers\etc\hosts`
+
+Start laradock:
+
+```bash
+./homeport up
+```
+> The first time you run this command may take some time as docker downloads images.
 
 ## Usage
 
@@ -72,26 +133,14 @@ If no command is used, it will run `docker-compose ps` to list the running conta
 ./homeport log -n 10 # show 10 lines of the log
 ```
 
-## Contributing
-
-1. Fork it!
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :D
-
 ## Learning Docker
 
 If you're unfamiliar with Docker, check out Chris Fidao's awesome [Docker in Development](https://serversforhackers.com/s/docker-in-development) and [Shipping Docker](https://serversforhackers.com/shipping-docker) courses at [serversforhackers.com](https://serversforhackers.com).
 
-## Supported Systems
+## Contributing
 
-Homeport requires Docker and currently works on Windows, Mac and Linux.
-
-> Windows requires running Hyper-V.  Using Git Bash (MINGW64) and WSL are supported.
-
-| Mac           | Linux         | Windows |
-| ------------- |:-------------:|:-------:|
-| Install Docker on [Mac](https://docs.docker.com/docker-for-mac/install/) | Install Docker on [Debian](https://docs.docker.com/engine/installation/linux/docker-ce/debian/) | Install Docker on [Windows](https://docs.docker.com/docker-for-windows/install/) |
-|       | Install Docker on [Ubuntu](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/) | |
-|       | Install Docker on [CentOS](https://docs.docker.com/engine/installation/linux/docker-ce/centos/) | |
+1. Fork this repo
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request

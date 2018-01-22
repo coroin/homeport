@@ -34,6 +34,10 @@ if [ ${#} -gt 0 ]; then
     elif [[ "${1}" == "down" ]] || [[ "${1}" == "stop" ]]; then
         ${COMPOSE} down
 
+    # create nginx config
+    elif [[ "${1}" == "setup" ]]; then
+        sed "s/laravel/${PROJECT}/g" "${NGINX_SITES}/laravel.conf.example" > "${NGINX_SITES}/${PROJECT}.conf"
+
     # php artisan commands
     elif [[ "${1}" == "art" ]] || [[ "${1}" == "artisan" ]]; then
         shift 1
