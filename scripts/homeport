@@ -20,7 +20,7 @@ CONTAINERS="nginx mariadb redis"        # default uses mariadb
 ################################################################################
 
 # Homeport script variables
-COMPOSE="docker-compose -f docker-compose.yml"
+COMPOSE="docker-compose -f docker-compose.yml -f docker-compose.dev.yml"
 
 # Run all commands from laradock folder
 cd ${LARADOCK}
