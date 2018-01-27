@@ -34,9 +34,20 @@ if [ ${#} -gt 0 ]; then
     elif [[ "${1}" == "down" ]] || [[ "${1}" == "stop" ]]; then
         ${COMPOSE} down
 
-    # create nginx config
+    # restart containers
+    elif [[ "${1}" == "restart" ]] || [[ "${1}" == "reboot" ]]; then
+        ${COMPOSE} down && \
+        ${COMPOSE} up -d ${CONTAINERS}
+
+    # create nginx config for project
     elif [[ "${1}" == "setup" ]]; then
         sed "s/laravel/${PROJECT}/g" "${NGINX_SITES}/laravel.conf.example" > "${NGINX_SITES}/${PROJECT}.conf"
+
+    # rebuild / repair containers
+    elif [[ "${1}" == "rebuild" ]] || [[ "${1}" == "repair" ]]; then
+        ${COMPOSE} down && \
+        ${COMPOSE} build --no-cache ${CONTAINERS} && \
+        ${COMPOSE} up -d ${CONTAINERS}
 
     # php artisan commands
     elif [[ "${1}" == "art" ]] || [[ "${1}" == "artisan" ]]; then

@@ -104,6 +104,9 @@ If no command is used, it will run `docker-compose ps` to list the running conta
 
 # stop laradock
 ./homeport down
+
+# restart laradock
+./homeport restart  # same as running ./homeport down && ./homeport up
 ```
 
 ### Artisan, Composer, and NPM
@@ -142,6 +145,16 @@ If no command is used, it will run `docker-compose ps` to list the running conta
 ./homeport log
 ./homeport log -f # follow
 ./homeport log -n 10 # show 10 lines of the log
+```
+
+### Rebuilding or Repairing Laradock
+
+After an update to Laradock or making changes to the `.env` file, rebuild the docker images:
+
+```bash
+# start laradock
+./homeport rebuild
+./homeport repair # "repair" is an alias of rebuild
 ```
 
 ## Learning Docker
