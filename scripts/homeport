@@ -46,7 +46,7 @@ if [ ${#} -gt 0 ]; then
     # rebuild / repair containers
     elif [[ "${1}" == "rebuild" ]] || [[ "${1}" == "repair" ]]; then
         ${COMPOSE} down && \
-        ${COMPOSE} build --no-cache ${CONTAINERS} && \
+        ${COMPOSE} build --no-cache workspace ${CONTAINERS} && \
         ${COMPOSE} up -d ${CONTAINERS}
 
     # php artisan commands
