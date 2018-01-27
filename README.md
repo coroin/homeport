@@ -24,10 +24,16 @@ Run this to create the `~/projects` folder (if it doesn't already exist) and ins
 mkdir -p ~/projects && cd ~/projects
 git clone https://github.com/Laradock/laradock.git
 cd laradock
-cp env-example .env
 ```
 
-## Installation
+Copy the `env-example` to `.env` and enable npm/node:
+
+```bash
+cp env-example .env
+sed -i s/WORKSPACE_INSTALL_NODE=false/WORKSPACE_INSTALL_NODE=true/ .env
+```
+
+## Installation (only required for a new project)
 
 Install Homeport in your project:
 
@@ -64,6 +70,8 @@ Create the nginx config file:
 ./homeport setup
 ```
 
+## Initial Setup (only required one time)
+
 Add entry to your hosts file:
 
 > It is recommended to use the `.test` top-level-domain for your localdev
@@ -92,13 +100,13 @@ If no command is used, it will run `docker-compose ps` to list the running conta
 
 ```bash
 # start laradock
-./homeport start
+./homeport up
 
 # stop laradock
-./homeport stop
+./homeport down
 ```
 
-### Artisan and Composer
+### Artisan, Composer, and NPM
 
 ```bash
 # run artisan commands
@@ -108,6 +116,9 @@ If no command is used, it will run `docker-compose ps` to list the running conta
 # run composer commands
 ./homeport composer <command>
 ./homeport comp <command> # "comp" is a shortcut to "composer"
+
+# run npm commands
+./homeport npm <command>
 ```
 
 ### MySql and Redis
