@@ -76,10 +76,15 @@ if [ ${#} -gt 0 ]; then
     # npm commands
     elif [[ "${1}" == "npm" ]]; then
         shift 1
-        COMMAND="npm ${@}"
-        ${COMPOSE} exec \
-            workspace \
-            bash -c "cd ${PROJECT}; ${COMMAND}"
+        echo "Laradock npm is currently not working :-("
+        echo "WORKAROUND: run this command:"
+        echo "  ./homeport exec workspace bash"
+        echo "  cd ${PROJECT}"
+        echo "  npm ${@}"
+        # COMMAND="npm ${@}"
+        # ${COMPOSE} exec \
+        #     workspace \
+        #     bash -c "cd ${PROJECT}; ${COMMAND}"
 
     # phpunit commands
     elif [[ "${1}" == "t" ]] || [[ "${1}" == "test" ]]; then
