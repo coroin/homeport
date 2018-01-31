@@ -19,4 +19,9 @@ class HomeportServiceProvider extends ServiceProvider
             define('HOMEPORT_PATH', realpath(__DIR__.'/../'));
         }
     }
+
+    public function publish()
+    {
+        @copy(HOMEPORT_PATH.'/scripts/homeport', base_path('homeport'));
+    }
 }
