@@ -49,28 +49,21 @@ Review the `homeport` script and customize for your project, if needed:
 ## Homeport Configuration
 
 # 1. set path to laradock files
-LARADOCK="${HOME}/projects/laradock"    # note: must use ${HOME} instead of ~
+LARADOCK="${HOME}/projects/laradock"        # note: must use ${HOME} instead of ~
 
 # 2. set project name
-PROJECT="${PWD##*/}"                    # defaults to current folder
+PROJECT="${PWD##*/}"                        # defaults to current folder
 
 # 3. specify database config
-DATABASE_NAME="${PROJECT}"              # defaults to project-name
-DATABASE_PASS=root                      # DO NOT CHANGE (laradock default)
-DATABASE_TYPE=mariadb                   # [mysql, mariadb]
+DATABASE_NAME="${PROJECT}"                  # defaults to project-name
+DATABASE_PASS=root                          # DO NOT CHANGE (laradock default)
+DATABASE_TYPE=mariadb                       # [mysql, mariadb]
 
 # 4. select containers to run
-CONTAINERS="nginx mariadb redis"        # default uses mariadb
-# CONTAINERS="nginx mysql redis"        # uncomment to use mysql
+CONTAINERS="nginx ${DATABASE_TYPE} redis"   # default uses nginx, database and redis
 ```
 
-Create the nginx config file:
-
-```bash
-./homeport setup
-```
-
-## Initial Setup (only required one time)
+## Initial Setup (required one time per project)
 
 Add entry to your hosts file:
 
@@ -83,12 +76,13 @@ Add entry to your hosts file:
 > On Mac/\*NIX this file is located at `/etc/hosts`.
 > On Windows, it is `C:\Windows\system32\drivers\etc\hosts`
 
-Start laradock:
+Create the database and nginx config file:
 
 ```bash
-./homeport up
+./homeport setup
 ```
-> The first time you run this command may take some time as docker downloads images.
+
+> Note: If this is the first time you have run this command, it may take some time to download and build the docker images.
 
 ## Usage
 
@@ -142,7 +136,8 @@ If no command is used, it will run `docker-compose ps` to list the running conta
 ./homeport t <arguments> # "t" is a shortcut to "test"
 
 # tail the laravel log
-./homeport log
+./homeport tail
+./homeport log <command> # "log" is an alias to "tail"
 ./homeport log -f # follow
 ./homeport log -n 10 # show 10 lines of the log
 ```

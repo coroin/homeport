@@ -3,24 +3,28 @@
 ## Homeport Configuration
 
 # 1. set path to laradock files
-LARADOCK="${HOME}/projects/laradock"    # note: must use ${HOME} instead of ~
+LARADOCK="${HOME}/projects/laradock"        # note: must use ${HOME} instead of ~
 
 # 2. set project name
-PROJECT="${PWD##*/}"                    # defaults to current folder
+PROJECT="${PWD##*/}"                        # defaults to current folder
 
 # 3. specify database config
-DATABASE_NAME="${PROJECT}"              # defaults to project-name
-DATABASE_PASS=root                      # DO NOT CHANGE (laradock default)
-DATABASE_TYPE=mariadb                   # [mysql, mariadb]
+DATABASE_NAME="${PROJECT}"                  # defaults to project-name
+DATABASE_PASS=secret                        # sync with .env
+DATABASE_TYPE=mariadb                       # [mysql, mariadb]
 
 # 4. select containers to run
-CONTAINERS="nginx mariadb redis"        # default uses mariadb
-# CONTAINERS="nginx mysql redis"        # uncomment to use mysql
+CONTAINERS="nginx ${DATABASE_TYPE} redis"   # default uses nginx, database and redis
 
 ################################################################################
 
 # Homeport script variables
 COMPOSE="docker-compose -f docker-compose.yml -f docker-compose.dev.yml"
+
+# Laradock variables (DO NOT MODIFY)
+LD_DBUSER=root
+LD_DBPASS=root
+LD_NGINX="nginx/sites"
 
 # Run all commands from laradock folder
 cd ${LARADOCK}
@@ -34,22 +38,11 @@ if [ ${#} -gt 0 ]; then
     elif [[ "${1}" == "down" ]] || [[ "${1}" == "stop" ]]; then
         ${COMPOSE} down
 
-    # restart containers
-    elif [[ "${1}" == "restart" ]] || [[ "${1}" == "reboot" ]]; then
-        ${COMPOSE} down && \
-        ${COMPOSE} up -d ${CONTAINERS}
+    ##########################
+    ### developer commands ###
+    ##########################
 
-    # create nginx config for project
-    elif [[ "${1}" == "setup" ]]; then
-        sed "s/laravel/${PROJECT}/g" "${NGINX_SITES}/laravel.conf.example" > "${NGINX_SITES}/${PROJECT}.conf"
-
-    # rebuild / repair containers
-    elif [[ "${1}" == "rebuild" ]] || [[ "${1}" == "repair" ]]; then
-        ${COMPOSE} down && \
-        ${COMPOSE} build --no-cache workspace ${CONTAINERS} && \
-        ${COMPOSE} up -d ${CONTAINERS}
-
-    # php artisan commands
+    # artisan commands
     elif [[ "${1}" == "art" ]] || [[ "${1}" == "artisan" ]]; then
         shift 1
         COMMAND="php artisan ${@}"
@@ -61,14 +54,6 @@ if [ ${#} -gt 0 ]; then
     elif [[ "${1}" == "comp" ]] || [[ "${1}" == "composer" ]]; then
         shift 1
         COMMAND="composer ${@}"
-        ${COMPOSE} exec \
-            workspace \
-            bash -c "cd ${PROJECT}; ${COMMAND}"
-
-    # tail laravel log
-    elif [[ "${1}" == "log" ]]; then
-        shift 1
-        COMMAND="tail ${@} storage/logs/laravel.log"
         ${COMPOSE} exec \
             workspace \
             bash -c "cd ${PROJECT}; ${COMMAND}"
@@ -94,13 +79,6 @@ if [ ${#} -gt 0 ]; then
             workspace \
             bash -c "cd ${PROJECT}; ${COMMAND}"
 
-    # mysql/mariadb commands
-    elif [[ "${1}" == "sql" ]]; then
-        shift 1
-        ${COMPOSE} exec \
-            ${DATABASE_TYPE} \
-            mysql -uroot -p${DATABASE_PASS} ${DATABASE_NAME} "${@}"
-
     # redis commands
     elif [[ "${1}" == "redis" ]]; then
         shift 1
@@ -109,7 +87,57 @@ if [ ${#} -gt 0 ]; then
             redis \
             bash -c "${COMMAND}"
 
-        else
+    # sql (mysql/mariadb) commands
+    elif [[ "${1}" == "sql" ]]; then
+        shift 1
+        ${COMPOSE} exec \
+            ${DATABASE_TYPE} \
+            mysql -u${LD_DBUSER} -p${LD_DBPASS} ${DATABASE_NAME} "${@}"
+
+    # tail laravel log
+    elif [[ "${1}" == "tail" ]] || [[ "${1}" == "log" ]]; then
+        shift 1
+        COMMAND="tail ${@} storage/logs/laravel.log"
+        ${COMPOSE} exec \
+            workspace \
+            bash -c "cd ${PROJECT}; ${COMMAND}"
+
+    #########################
+    ### utility functions ###
+    #########################
+
+    # restart containers
+    elif [[ "${1}" == "restart" ]] || [[ "${1}" == "reboot" ]]; then
+        ${COMPOSE} down && \
+        ${COMPOSE} up -d ${CONTAINERS}
+
+    # create database and nginx config for project
+    elif [[ "${1}" == "setup" ]]; then
+        # start all containers
+        ${COMPOSE} up -d ${CONTAINERS}
+        # create project database
+        COMMAND="create database if not exists ${DATABASE_NAME};"
+        ${COMPOSE} exec \
+            ${DATABASE_TYPE} \
+            mysql -u${LD_DBUSER} -p${LD_DBPASS} -e "${COMMAND}"
+        # create project database user
+        COMMAND="grant all privileges on ${DATABASE_NAME}.* to '${DATABASE_NAME}'@'%' identified by '${DATABASE_PASS}'; flush privileges;"
+        ${COMPOSE} exec \
+            ${DATABASE_TYPE} \
+            mysql -u${LD_DBUSER} -p${LD_DBPASS} -e "${COMMAND}"
+        # nginx config
+        sed -e "s/laravel/${PROJECT}/g" "${LD_NGINX}/laravel.conf.example" > "${LD_NGINX}/${PROJECT}.conf"
+        # stop all containers
+        ${COMPOSE} down
+
+    # rebuild / repair containers
+    elif [[ "${1}" == "rebuild" ]] || [[ "${1}" == "repair" ]]; then
+        ${COMPOSE} down && \
+        ${COMPOSE} build --no-cache workspace ${CONTAINERS} && \
+        ${COMPOSE} up -d ${CONTAINERS}
+
+    # run any valid docker command
+    else
         ${COMPOSE} "${@}"
     fi
 else
