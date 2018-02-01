@@ -20,6 +20,7 @@ CONTAINERS="nginx ${DATABASE_TYPE} redis"   # default uses nginx, database and r
 
 # Homeport script variables
 COMPOSE="docker-compose -f docker-compose.yml -f docker-compose.dev.yml"
+CODE="${PWD}"
 
 # Laradock variables (DO NOT MODIFY)
 LD_DBUSER=root
@@ -135,6 +136,10 @@ if [ ${#} -gt 0 ]; then
         ${COMPOSE} down && \
         ${COMPOSE} build --no-cache workspace ${CONTAINERS} && \
         ${COMPOSE} up -d ${CONTAINERS}
+
+    # upgrade homeport
+    elif [[ "${1}" == "upgrade" ]] || [[ "${1}" == "update" ]]; then
+        cp "${CODE}/vendor/coroin/homeport/scripts/homeport" "${CODE}/"
 
     # run any valid docker command
     else

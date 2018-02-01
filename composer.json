@@ -14,9 +14,6 @@
         }
     },
     "require": {},
-    "scripts": {
-        "post-package-update": "Homeport\\HomeportServiceProvider::publish"
-    },
     "extra": {
         "laravel": {
             "providers": [

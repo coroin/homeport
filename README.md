@@ -142,7 +142,7 @@ If no command is used, it will run `docker-compose ps` to list the running conta
 ./homeport log -n 10 # show 10 lines of the log
 ```
 
-### Rebuilding or Repairing Laradock
+## Rebuilding or Repairing Laradock
 
 After an update to Laradock or making changes to the `.env` file, rebuild the docker images:
 
@@ -151,6 +151,16 @@ After an update to Laradock or making changes to the `.env` file, rebuild the do
 ./homeport rebuild
 ./homeport repair # "repair" is an alias of rebuild
 ```
+
+## Upgrading Homeport
+
+Run the following command each time `composer update` gives you a new version of `homeport`
+
+```bash
+# upgrade homeport
+./homeport update
+./homeport upgrade # "upgrade" is an alias of update
+`
 
 ## Learning Docker
 
