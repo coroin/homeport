@@ -160,7 +160,7 @@ Run the following command each time `composer update` gives you a new version of
 # upgrade homeport
 ./homeport update
 ./homeport upgrade # "upgrade" is an alias of update
-`
+```
 
 ## Learning Docker
 

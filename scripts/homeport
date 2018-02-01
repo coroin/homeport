@@ -17,12 +17,15 @@ DATABASE_TYPE=mariadb                       # [mysql, mariadb]
 CONTAINERS="nginx ${DATABASE_TYPE} redis"   # default uses nginx, database and redis
 
 ################################################################################
+###                       DO NOT MODIFY ANYTHING BELOW                       ###
+################################################################################
 
-# Homeport script variables
+# Homeport variables
+VERSION="1.1.0"
 COMPOSE="docker-compose -f docker-compose.yml -f docker-compose.dev.yml"
 CODE="${PWD}"
 
-# Laradock variables (DO NOT MODIFY)
+# Laradock variables
 LD_DBUSER=root
 LD_DBPASS=root
 LD_NGINX="nginx/sites"
@@ -140,6 +143,10 @@ if [ ${#} -gt 0 ]; then
     # upgrade homeport
     elif [[ "${1}" == "upgrade" ]] || [[ "${1}" == "update" ]]; then
         cp "${CODE}/vendor/coroin/homeport/scripts/homeport" "${CODE}/"
+
+    # display homeport version
+    elif [[ "${1}" == "version" ]] || [[ "${1}" == "v" ]]; then
+        echo "homeport version ${VERSION}"
 
     # run any valid docker command
     else
