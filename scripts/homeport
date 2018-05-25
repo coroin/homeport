@@ -96,7 +96,7 @@ if [ ${#} -gt 0 ]; then
         shift 1
         ${COMPOSE} exec \
             ${DATABASE_TYPE} \
-            mysql -u${LD_DBUSER} -p${LD_DBPASS} ${DATABASE_NAME} "${@}"
+            mysql -u${LD_DBUSER} -p${LD_DBPASS} ${DATABASE_NAME} -A "${@}"
 
     # tail laravel log
     elif [[ "${1}" == "tail" ]] || [[ "${1}" == "log" ]]; then
