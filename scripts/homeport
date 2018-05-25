@@ -21,8 +21,8 @@ CONTAINERS="nginx ${DATABASE_TYPE} redis"   # default uses nginx, database and r
 ################################################################################
 
 # Homeport variables
-VERSION="1.1.0"
-COMPOSE="docker-compose -f docker-compose.yml -f docker-compose.dev.yml"
+VERSION="1.1.1"
+COMPOSE="docker-compose -f docker-compose.yml"
 CODE="${PWD}"
 
 # Laradock variables
