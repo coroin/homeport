@@ -14,7 +14,7 @@ DATABASE_PASS=secret                        # sync with .env
 DATABASE_TYPE=mariadb                       # [mysql, mariadb]
 
 # 4. select containers to run
-CONTAINERS="nginx ${DATABASE_TYPE} redis"   # default uses nginx, database and redis
+CONTAINERS="nginx ${DATABASE_TYPE} redis workspace"
 
 ################################################################################
 ###                       DO NOT MODIFY ANYTHING BELOW                       ###
