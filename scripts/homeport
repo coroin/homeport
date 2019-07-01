@@ -3,7 +3,7 @@
 ## Homeport Configuration
 
 # 1. set path to laradock files
-LARADOCK="${HOME}/projects/laradock"        # note: must use ${HOME} instead of ~
+LARADOCK="${HOME}/code/laradock"        # note: must use ${HOME} instead of ~
 
 # 2. set project name
 PROJECT="${PWD##*/}"                        # defaults to current folder
@@ -21,7 +21,7 @@ CONTAINERS="nginx ${DATABASE_TYPE} redis workspace"
 ################################################################################
 
 # Homeport variables
-VERSION="1.1.1"
+VERSION="1.2.0"
 COMPOSE="docker-compose -f docker-compose.yml"
 CODE="${PWD}"
 
@@ -65,15 +65,10 @@ if [ ${#} -gt 0 ]; then
     # npm commands
     elif [[ "${1}" == "npm" ]]; then
         shift 1
-        echo "Laradock npm is currently not working :-("
-        echo "WORKAROUND: run this command:"
-        echo "  ./homeport exec workspace bash"
-        echo "  cd ${PROJECT}"
-        echo "  npm ${@}"
-        # COMMAND="npm ${@}"
-        # ${COMPOSE} exec \
-        #     workspace \
-        #     bash -c "cd ${PROJECT}; ${COMMAND}"
+        COMMAND="npm ${@}"
+        ${COMPOSE} exec \
+            workspace \
+            bash -c "cd ${PROJECT}; ${COMMAND}"
 
     # phpunit commands
     elif [[ "${1}" == "t" ]] || [[ "${1}" == "test" ]]; then

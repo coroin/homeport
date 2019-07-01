@@ -8,29 +8,29 @@ Homeport requires [Docker](https://www.docker.com/community-edition#/download) a
 
 Install laradock in the same root folder as your other projects.
 
-> It is recommended to use the `~/projects` folder
+> It is recommended to use the `~/code` folder
 
 ```
-/home/USER/projects/        /home/USER/projects/
+/home/USER/code/            /home/USER/code/
 ├── a-project               ├── a-project
 ├── b-project               ├── b-project
 ├──                         ├── laradock
 ├── z-project               ├── z-project
 ```
 
-Run this to create the `~/projects` folder (if it doesn't already exist) and install laradock:
+Run this to create the `~/code` folder (if it doesn't already exist) and install laradock:
 
 ```bash
-mkdir -p ~/projects && cd ~/projects
+mkdir -p ~/code && cd ~/code
 git clone https://github.com/Laradock/laradock.git
 cd laradock
 ```
 
-Copy the `env-example` to `.env` and enable npm/node:
+Copy the `env-example` to `.env` and enable packages:
 
 ```bash
 cp env-example .env
-sed -i s/WORKSPACE_INSTALL_NODE=false/WORKSPACE_INSTALL_NODE=true/ .env
+perl -i -pe's/WORKSPACE_INSTALL_IMAP=false/WORKSPACE_INSTALL_IMAP=true/' .env
 ```
 
 ## Installation (only required for a new project)
@@ -49,7 +49,7 @@ Review the `homeport` script and customize for your project, if needed:
 ## Homeport Configuration
 
 # 1. set path to laradock files
-LARADOCK="${HOME}/projects/laradock"        # note: must use ${HOME} instead of ~
+LARADOCK="${HOME}/code/laradock"        # note: must use ${HOME} instead of ~
 
 # 2. set project name
 PROJECT="${PWD##*/}"                        # defaults to current folder
