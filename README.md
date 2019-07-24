@@ -31,6 +31,7 @@ Copy the `env-example` to `.env` and enable packages:
 ```bash
 cp env-example .env
 perl -i -pe's/WORKSPACE_INSTALL_IMAP=false/WORKSPACE_INSTALL_IMAP=true/' .env
+perl -i -pe's/WORKSPACE_INSTALL_PYTHON=false/WORKSPACE_INSTALL_PYTHON=true/' .env
 ```
 
 ## Installation (only required for a new project)

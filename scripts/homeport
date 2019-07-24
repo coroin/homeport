@@ -21,7 +21,7 @@ CONTAINERS="nginx ${DATABASE_TYPE} redis workspace"
 ################################################################################
 
 # Homeport variables
-VERSION="1.2.0"
+VERSION="1.2.1"
 COMPOSE="docker-compose -f docker-compose.yml"
 CODE="${PWD}"
 
